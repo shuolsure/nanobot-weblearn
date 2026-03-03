@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'nanobot-tutorial/**'
 
 permissions:
   contents: read
@@ -32,6 +30,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # 只上传 nanobot-tutorial 目录
           path: './nanobot-tutorial'
 
       - name: Deploy to GitHub Pages
