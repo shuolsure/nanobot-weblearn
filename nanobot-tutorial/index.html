@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanobot 项目教程 - 编程新手友好指南</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/demo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- 侧边导航 -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>🐈 Nanobot 教程</h2>
+            <button class="close-btn" id="closeSidebar">×</button>
+        </div>
+        
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索内容...">
+            <i class="fas fa-search"></i>
+        </div>
+
+        <!-- 导航菜单 -->
+        <ul class="nav-menu">
+            <li class="nav-item active" data-section="overview">
+                <i class="fas fa-home"></i>
+                <span>项目概述</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="features">
+                <i class="fas fa-cogs"></i>
+                <span>核心功能</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="architecture">
+                <i class="fas fa-project-diagram"></i>
+                <span>系统架构</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="folder-structure">
+                <i class="fas fa-folder-tree"></i>
+                <span>文件夹结构</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="code-analysis">
+                <i class="fas fa-code"></i>
+                <span>代码解析</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="methods">
+                <i class="fas fa-cubes"></i>
+                <span>方法介绍</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="demo">
+                <i class="fas fa-play-circle"></i>
+                <span>运行演示</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+            <li class="nav-item" data-section="quick-start">
+                <i class="fas fa-rocket"></i>
+                <span>快速开始</span>
+                <span class="check-mark"><i class="fas fa-check"></i></span>
+            </li>
+        </ul>
+
+        <!-- 学习进度 -->
+        <div class="learning-progress">
+            <h3>学习进度</h3>
+            <div class="progress-circle">
+                <svg viewBox="0 0 36 36">
+                    <path class="circle-bg"
+                        d="M18 2.0845
+                           a 15.9155 15.9155 0 0 1 0 31.831
+                           a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <path class="circle-progress" id="circleProgress"
+                        stroke-dasharray="0, 100"
+                        d="M18 2.0845
+                           a 15.9155 15.9155 0 0 1 0 31.831
+                           a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 移动端菜单按钮 -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 第一部分：项目概述 -->
+        <section id="overview" class="section active">
+            <div class="section-header">
+                <h1><i class="fas fa-home"></i> 项目概述</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>项目概述</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="card-icon">🐈</div>
+                <h2>什么是 Nanobot？</h2>
+                <p class="lead">
+                    Nanobot 是一个<strong>轻量级的 AI 代理框架</strong>，让你能够轻松构建自己的 AI 助手！
+                </p>
+                <div class="highlight-box">
+                    <h3><i class="fas fa-lightbulb"></i> 简单来说</h3>
+                    <p>
+                        想象一下，你可以拥有一个像 ChatGPT 一样的 AI 助手，但它不仅能聊天，还能：
+                    </p>
+                    <ul>
+                        <li>📱 在 Telegram、WhatsApp、Discord 等平台上与你对话</li>
+                        <li>🔧 执行各种任务（读写文件、搜索网页、运行命令）</li>
+                        <li>⏰ 定时提醒你重要事项</li>
+                        <li>🧠 记住你们之前的对话内容</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-star"></i> 核心价值</h2>
+                <div class="value-grid">
+                    <div class="value-item">
+                        <div class="value-icon">🎯</div>
+                        <h3>简单易用</h3>
+                        <p>只需几行配置，就能启动你的 AI 助手</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">🔌</div>
+                        <h3>多平台支持</h3>
+                        <p>支持 10+ 种聊天平台，随时随地使用</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">🧩</div>
+                        <h3>可扩展</h3>
+                        <p>轻松添加新功能，打造专属助手</p>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-icon">💰</div>
+                        <h3>成本低</h3>
+                        <p>支持多种 AI 模型，选择最适合你的</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-users"></i> 适合谁使用？</h2>
+                <div class="audience-list">
+                    <div class="audience-item">
+                        <div class="audience-icon">👨‍💻</div>
+                        <div class="audience-content">
+                            <h3>编程新手</h3>
+                            <p>想学习 AI 应用开发，从实际项目入手</p>
+                        </div>
+                    </div>
+                    <div class="audience-item">
+                        <div class="audience-icon">🛠️</div>
+                        <div class="audience-content">
+                            <h3>效率工具爱好者</h3>
+                            <p>希望自动化日常任务，提高工作效率</p>
+                        </div>
+                    </div>
+                    <div class="audience-item">
+                        <div class="audience-icon">🤖</div>
+                        <div class="audience-content">
+                            <h3>AI 探索者</h3>
+                            <p>想深入了解 AI Agent 的工作原理</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-disabled" disabled>
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('features')">
+                    下一节：核心功能 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 第二部分：核心功能 -->
+        <section id="features" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-cogs"></i> 核心功能</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>核心功能</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-list-check"></i> 功能清单</h2>
+                <p>Nanobot 包含以下核心功能模块，每个模块都有特定的职责：</p>
+                
+                <div class="feature-accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="feature-icon">🤖</span>
+                            <span class="feature-title">AI 代理引擎</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <p>这是 Nanobot 的"大脑"，负责：</p>
+                            <ul>
+                                <li><strong>理解用户意图</strong>：分析用户说的话，理解想要做什么</li>
+                                <li><strong>决策执行</strong>：决定需要调用哪些工具来完成任务</li>
+                                <li><strong>生成回复</strong>：将执行结果转化为自然语言回复</li>
+                            </ul>
+                            <div class="code-example">
+                                <p class="example-title">💡 例子</p>
+                                <p>用户说："帮我查一下今天北京的天气"</p>
+                                <p>代理引擎会：理解意图 → 调用天气查询工具 → 返回结果</p>
+                            </div>
+                            <div class="source-code-link">
+                                <button class="btn btn-code" onclick="showSourceCode('agent-engine')">
+                                    <i class="fas fa-code"></i> 查看源码解析
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="feature-icon">🔧</span>
+                            <span class="feature-title">工具系统</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <p>工具是 AI 的"手"，让它能执行实际操作：</p>
+                            <div class="tool-grid">
+                                <div class="tool-item">
+                                    <strong>📁 文件操作</strong>
+                                    <p>读取、写入、搜索文件</p>
+                                </div>
+                                <div class="tool-item">
+                                    <strong>💻 命令执行</strong>
+                                    <p>运行 Shell 命令</p>
+                                </div>
+                                <div class="tool-item">
+                                    <strong>🌐 网页搜索</strong>
+                                    <p>搜索互联网获取信息</p>
+                                </div>
+                                <div class="tool-item">
+                                    <strong>💬 消息发送</strong>
+                                    <p>主动发送消息给用户</p>
+                                </div>
+                                <div class="tool-item">
+                                    <strong>⏰ 定时任务</strong>
+                                    <p>设置提醒和定时执行</p>
+                                </div>
+                                <div class="tool-item">
+                                    <strong>🔗 MCP 协议</strong>
+                                    <p>连接外部工具服务</p>
+                                </div>
+                            </div>
+                            <div class="source-code-link">
+                                <button class="btn btn-code" onclick="showSourceCode('tool-system')">
+                                    <i class="fas fa-code"></i> 查看源码解析
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="feature-icon">📱</span>
+                            <span class="feature-title">多渠道接入</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <p>支持多种聊天平台，让你在任何地方使用：</p>
+                            <div class="channel-list">
+                                <div class="channel-item">
+                                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/telegram/telegram-original.svg" alt="Telegram">
+                                    <span>Telegram</span>
+                                </div>
+                                <div class="channel-item">
+                                    <i class="fab fa-whatsapp" style="color: #25D366; font-size: 40px;"></i>
+                                    <span>WhatsApp</span>
+                                </div>
+                                <div class="channel-item">
+                                    <i class="fab fa-discord" style="color: #5865F2; font-size: 40px;"></i>
+                                    <span>Discord</span>
+                                </div>
+                                <div class="channel-item">
+                                    <i class="fab fa-slack" style="color: #4A154B; font-size: 40px;"></i>
+                                    <span>Slack</span>
+                                </div>
+                                <div class="channel-item">
+                                    <span style="font-size: 40px;">📧</span>
+                                    <span>Email</span>
+                                </div>
+                                <div class="channel-item">
+                                    <span style="font-size: 40px;">💬</span>
+                                    <span>飞书/钉钉/QQ</span>
+                                </div>
+                            </div>
+                            <div class="source-code-link">
+                                <button class="btn btn-code" onclick="showSourceCode('multi-channel')">
+                                    <i class="fas fa-code"></i> 查看源码解析
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="feature-icon">🧠</span>
+                            <span class="feature-title">记忆系统</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <p>让 AI 能够"记住"之前的对话：</p>
+                            <ul>
+                                <li><strong>短期记忆</strong>：当前对话的上下文</li>
+                                <li><strong>长期记忆</strong>：重要信息的持久化存储</li>
+                                <li><strong>记忆整合</strong>：自动总结和归档历史对话</li>
+                            </ul>
+                            <div class="memory-diagram">
+                                <div class="memory-step">
+                                    <div class="step-icon">📝</div>
+                                    <div class="step-text">对话发生</div>
+                                </div>
+                                <div class="arrow">→</div>
+                                <div class="memory-step">
+                                    <div class="step-icon">💾</div>
+                                    <div class="step-text">存储消息</div>
+                                </div>
+                                <div class="arrow">→</div>
+                                <div class="memory-step">
+                                    <div class="step-icon">🔄</div>
+                                    <div class="step-text">整合总结</div>
+                                </div>
+                                <div class="arrow">→</div>
+                                <div class="memory-step">
+                                    <div class="step-icon">📚</div>
+                                    <div class="step-text">长期记忆</div>
+                                </div>
+                            </div>
+                            <div class="source-code-link">
+                                <button class="btn btn-code" onclick="showSourceCode('memory-system')">
+                                    <i class="fas fa-code"></i> 查看源码解析
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="feature-icon">⏰</span>
+                            <span class="feature-title">定时任务</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <p>支持三种定时方式：</p>
+                            <div class="schedule-types">
+                                <div class="schedule-type">
+                                    <h4>🕐 一次性任务</h4>
+                                    <p>在指定时间执行一次</p>
+                                    <code>例如：明天早上 9 点提醒我开会</code>
+                                </div>
+                                <div class="schedule-type">
+                                    <h4>🔄 周期性任务</h4>
+                                    <p>每隔一段时间执行</p>
+                                    <code>例如：每小时检查一次邮件</code>
+                                </div>
+                                <div class="schedule-type">
+                                    <h4>📅 Cron 表达式</h4>
+                                    <p>使用专业定时语法</p>
+                                    <code>例如：每天早上 8 点（0 8 * * *）</code>
+                                </div>
+                            </div>
+                            <div class="source-code-link">
+                                <button class="btn btn-code" onclick="showSourceCode('cron-system')">
+                                    <i class="fas fa-code"></i> 查看源码解析
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="source-code-link">
+                    <button class="btn btn-code" onclick="showSourceCode('core-modules')">
+                        <i class="fas fa-code"></i> 查看核心模块源码解析
+                    </button>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('overview')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('architecture')">
+                    下一节：系统架构 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 第三部分：系统架构 -->
+        <section id="architecture" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-project-diagram"></i> 系统架构</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>系统架构</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-sitemap"></i> 架构概览</h2>
+                <p>下面是 Nanobot 的整体架构图，展示了各个组件之间的关系：</p>
+                
+                <div class="architecture-diagram">
+                    <div class="arch-layer">
+                        <div class="layer-title">用户层</div>
+                        <div class="arch-components">
+                            <div class="arch-component user-component">
+                                <i class="fas fa-user"></i>
+                                <span>用户</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arch-arrow">↕️ 消息</div>
+                    
+                    <div class="arch-layer">
+                        <div class="layer-title">渠道层</div>
+                        <div class="arch-components channel-components">
+                            <div class="arch-component">
+                                <i class="fab fa-telegram"></i>
+                                <span>Telegram</span>
+                            </div>
+                            <div class="arch-component">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                            </div>
+                            <div class="arch-component">
+                                <i class="fab fa-discord"></i>
+                                <span>Discord</span>
+                            </div>
+                            <div class="arch-component">
+                                <i class="fas fa-terminal"></i>
+                                <span>CLI</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arch-arrow">↕️ 消息总线</div>
+                    
+                    <div class="arch-layer highlight-layer">
+                        <div class="layer-title">核心层</div>
+                        <div class="arch-components core-components">
+                            <div class="arch-component core-component">
+                                <i class="fas fa-brain"></i>
+                                <span>AI 代理引擎</span>
+                            </div>
+                            <div class="arch-component core-component">
+                                <i class="fas fa-tools"></i>
+                                <span>工具注册表</span>
+                            </div>
+                            <div class="arch-component core-component">
+                                <i class="fas fa-memory"></i>
+                                <span>记忆管理器</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="arch-arrow">↕️ API 调用</div>
+                    
+                    <div class="arch-layer">
+                        <div class="layer-title">服务层</div>
+                        <div class="arch-components service-components">
+                            <div class="arch-component">
+                                <i class="fas fa-robot"></i>
+                                <span>LLM 提供商</span>
+                            </div>
+                            <div class="arch-component">
+                                <i class="fas fa-clock"></i>
+                                <span>定时服务</span>
+                            </div>
+                            <div class="arch-component">
+                                <i class="fas fa-heartbeat"></i>
+                                <span>心跳服务</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-route"></i> 数据流向</h2>
+                <p>当用户发送一条消息时，系统是如何处理的？</p>
+                
+                <div class="flow-diagram">
+                    <div class="flow-step" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>接收消息</h4>
+                            <p>渠道（如 Telegram）接收到用户消息</p>
+                        </div>
+                    </div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>消息路由</h4>
+                            <p>通过消息总线传递到代理引擎</p>
+                        </div>
+                    </div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>构建上下文</h4>
+                            <p>加载历史对话和记忆信息</p>
+                        </div>
+                    </div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>AI 处理</h4>
+                            <p>调用 LLM 进行理解和决策</p>
+                        </div>
+                    </div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>执行工具</h4>
+                            <p>如果需要，调用相应工具执行任务</p>
+                        </div>
+                    </div>
+                    <div class="flow-connector"></div>
+                    <div class="flow-step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>返回结果</h4>
+                            <p>生成回复并发送给用户</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="source-code-link">
+                    <button class="btn btn-code" onclick="showSourceCode('data-flow')">
+                        <i class="fas fa-code"></i> 查看数据流源码解析
+                    </button>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-cubes"></i> 核心模块关系</h2>
+                <div class="module-relationship">
+                    <div class="module-node main-node">
+                        <div class="node-icon">🤖</div>
+                        <div class="node-title">Agent Loop</div>
+                        <div class="node-desc">主处理循环</div>
+                    </div>
+                    <div class="module-connections">
+                        <div class="connection-line"></div>
+                        <div class="sub-modules">
+                            <div class="module-node">
+                                <div class="node-icon">📝</div>
+                                <div class="node-title">Context</div>
+                                <div class="node-desc">上下文构建</div>
+                            </div>
+                            <div class="module-node">
+                                <div class="node-icon">🧠</div>
+                                <div class="node-title">Memory</div>
+                                <div class="node-desc">记忆管理</div>
+                            </div>
+                            <div class="module-node">
+                                <div class="node-icon">🔧</div>
+                                <div class="node-title">Tools</div>
+                                <div class="node-desc">工具调用</div>
+                            </div>
+                            <div class="module-node">
+                                <div class="node-icon">💬</div>
+                                <div class="node-title">Session</div>
+                                <div class="node-desc">会话管理</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="source-code-link">
+                    <button class="btn btn-code" onclick="showSourceCode('core-modules')">
+                        <i class="fas fa-code"></i> 查看核心模块源码解析
+                    </button>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('features')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('folder-structure')">
+                    下一节：文件夹结构 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 第四部分：文件夹结构 -->
+        <section id="folder-structure" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-folder-tree"></i> 文件夹结构</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>文件夹结构</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-folder-open"></i> 项目目录概览</h2>
+                <p>点击文件夹可以展开查看详细说明：</p>
+                
+                <div class="folder-tree">
+                    <div class="folder-item root" onclick="toggleFolder(this)">
+                        <div class="folder-header">
+                            <i class="fas fa-folder"></i>
+                            <span>nanobot/</span>
+                            <span class="folder-desc">项目根目录</span>
+                        </div>
+                        <div class="folder-children">
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>agent/</span>
+                                    <span class="folder-desc">核心代理模块</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-loop')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>loop.py</span>
+                                        <span class="file-desc">主处理循环</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-context')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>context.py</span>
+                                        <span class="file-desc">上下文构建</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-memory')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>memory.py</span>
+                                        <span class="file-desc">记忆管理</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-skills')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>skills.py</span>
+                                        <span class="file-desc">技能加载</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-subagent')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>subagent.py</span>
+                                        <span class="file-desc">子代理管理</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="folder-item" onclick="toggleFolder(this)">
+                                        <div class="folder-header">
+                                            <i class="fas fa-folder"></i>
+                                            <span>tools/</span>
+                                            <span class="folder-desc">工具模块</span>
+                                        </div>
+                                        <div class="folder-children">
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-base')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>base.py</span>
+                                                <span class="file-desc">工具基类</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-registry')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>registry.py</span>
+                                                <span class="file-desc">工具注册表</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-shell')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>shell.py</span>
+                                                <span class="file-desc">Shell 命令</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-filesystem')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>filesystem.py</span>
+                                                <span class="file-desc">文件操作</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-web')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>web.py</span>
+                                                <span class="file-desc">网页搜索</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-message')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>message.py</span>
+                                                <span class="file-desc">消息发送</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-cron')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>cron.py</span>
+                                                <span class="file-desc">定时任务</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-mcp')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>mcp.py</span>
+                                                <span class="file-desc">MCP 协议</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-tools-spawn')">
+                                                <i class="fas fa-file-code"></i>
+                                                <span>spawn.py</span>
+                                                <span class="file-desc">子代理启动</span>
+                                                <i class="fas fa-chevron-right file-arrow"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>bus/</span>
+                                    <span class="folder-desc">消息路由</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-bus-events')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>events.py</span>
+                                        <span class="file-desc">消息类型定义</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-bus-queue')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>queue.py</span>
+                                        <span class="file-desc">消息队列</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>channels/</span>
+                                    <span class="folder-desc">渠道集成</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-channels-base')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>base.py</span>
+                                        <span class="file-desc">渠道基类</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-channels-manager')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>manager.py</span>
+                                        <span class="file-desc">渠道管理器</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>providers/</span>
+                                    <span class="folder-desc">LLM 提供商</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-providers-base')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>base.py</span>
+                                        <span class="file-desc">提供商基类</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-providers-registry')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>registry.py</span>
+                                        <span class="file-desc">提供商注册表</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>config/</span>
+                                    <span class="folder-desc">配置管理</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-config-loader')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>loader.py</span>
+                                        <span class="file-desc">配置加载器</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-config-schema')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>schema.py</span>
+                                        <span class="file-desc">配置模式定义</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>session/</span>
+                                    <span class="folder-desc">会话管理</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-session-manager')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>manager.py</span>
+                                        <span class="file-desc">会话管理器</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>cron/</span>
+                                    <span class="folder-desc">定时任务</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-cron-service')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>service.py</span>
+                                        <span class="file-desc">定时服务</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-cron-types')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>types.py</span>
+                                        <span class="file-desc">任务类型定义</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>heartbeat/</span>
+                                    <span class="folder-desc">心跳服务</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-heartbeat-service')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>service.py</span>
+                                        <span class="file-desc">心跳服务</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>cli/</span>
+                                    <span class="folder-desc">命令行接口</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-cli-commands')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>commands.py</span>
+                                        <span class="file-desc">CLI 命令定义</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="folder-item" onclick="toggleFolder(this)">
+                                <div class="folder-header">
+                                    <i class="fas fa-folder"></i>
+                                    <span>utils/</span>
+                                    <span class="folder-desc">工具函数</span>
+                                </div>
+                                <div class="folder-children">
+                                    <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-utils-helpers')">
+                                        <i class="fas fa-file-code"></i>
+                                        <span>helpers.py</span>
+                                        <span class="file-desc">辅助函数</span>
+                                        <i class="fas fa-chevron-right file-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-init')">
+                                <i class="fas fa-file-code"></i>
+                                <span>__init__.py</span>
+                                <span class="file-desc">包初始化文件</span>
+                                <i class="fas fa-chevron-right file-arrow"></i>
+                            </div>
+                            <div class="file-item" onclick="event.stopPropagation(); showSourceCode('file-main')">
+                                <i class="fas fa-file-code"></i>
+                                <span>__main__.py</span>
+                                <span class="file-desc">模块入口文件</span>
+                                <i class="fas fa-chevron-right file-arrow"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('architecture')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('code-analysis')">
+                    下一节：代码解析 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 第五部分：代码解析 -->
+        <section id="code-analysis" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-code"></i> 代码解析</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>代码解析</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-play-circle"></i> 核心处理流程</h2>
+                <p>让我们从最重要的 <code>loop.py</code> 开始，理解 AI 代理是如何工作的：</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="file-name">agent/loop.py - 主处理循环</span>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                    </div>
+                    <pre><code class="language-python">async def process_message(self, message: str, session_key: str) -> str:
+    """
+    处理用户消息的核心方法
+    
+    这是 AI 代理的"大脑"，负责：
+    1. 构建上下文（加载历史对话）
+    2. 调用 LLM 获取响应
+    3. 执行工具调用（如果需要）
+    4. 返回最终结果
+    """
+    # 第一步：构建上下文
+    # 把历史对话、记忆信息组合成 LLM 能理解的格式
+    messages = await self._build_context(session_key)
+    
+    # 添加用户消息
+    messages.append({"role": "user", "content": message})
+    
+    # 第二步：调用 LLM
+    # 让 AI 理解用户意图并决定如何响应
+    response = await self.provider.chat(
+        messages=messages,
+        tools=self._get_tool_definitions(),
+        model=self.model
+    )
+    
+    # 第三步：处理工具调用
+    # 如果 AI 决定要使用工具（比如查天气），执行它
+    while response.has_tool_calls:
+        # 执行所有工具调用
+        tool_results = await self._execute_tools(response.tool_calls)
+        
+        # 把工具结果发回给 AI
+        messages.append(response.message)
+        messages.extend(tool_results)
+        
+        # 让 AI 根据工具结果生成最终回复
+        response = await self.provider.chat(
+            messages=messages,
+            tools=self._get_tool_definitions(),
+            model=self.model
+        )
+    
+    # 第四步：保存对话并返回结果
+    await self._save_message(session_key, "assistant", response.content)
+    return response.content</code></pre>
+                </div>
+                
+                <div class="code-explanation">
+                    <h3><i class="fas fa-lightbulb"></i> 代码解读</h3>
+                    <div class="explanation-steps">
+                        <div class="exp-step">
+                            <div class="exp-num">1</div>
+                            <div class="exp-content">
+                                <strong>构建上下文</strong>
+                                <p>就像人需要记忆一样，AI 也需要知道之前的对话内容。这一步把历史消息加载进来。</p>
+                            </div>
+                        </div>
+                        <div class="exp-step">
+                            <div class="exp-num">2</div>
+                            <div class="exp-content">
+                                <strong>调用 LLM</strong>
+                                <p>把用户消息发给 AI 模型（如 GPT-4），让它理解并决定如何响应。</p>
+                            </div>
+                        </div>
+                        <div class="exp-step">
+                            <div class="exp-num">3</div>
+                            <div class="exp-content">
+                                <strong>执行工具</strong>
+                                <p>如果 AI 决定使用工具（比如"查天气"），就执行相应的工具并获取结果。</p>
+                            </div>
+                        </div>
+                        <div class="exp-step">
+                            <div class="exp-num">4</div>
+                            <div class="exp-content">
+                                <strong>返回结果</strong>
+                                <p>保存对话记录，把 AI 的回复返回给用户。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-tools"></i> 工具系统解析</h2>
+                <p>看看工具是如何定义和注册的：</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="file-name">agent/tools/base.py - 工具基类</span>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                    </div>
+                    <pre><code class="language-python">class BaseTool:
+    """
+    所有工具的基类
+    
+    每个工具都需要：
+    1. name: 工具名称（AI 用这个名字调用工具）
+    2. description: 工具描述（告诉 AI 这个工具能做什么）
+    3. parameters: 参数定义（告诉 AI 需要传什么参数）
+    4. execute: 执行方法（实际干活的代码）
+    """
+    
+    @property
+    def name(self) -> str:
+        """工具名称"""
+        raise NotImplementedError
+    
+    @property
+    def description(self) -> str:
+        """工具描述"""
+        raise NotImplementedError
+    
+    @property
+    def parameters(self) -> dict:
+        """
+        参数定义（JSON Schema 格式）
+        
+        例如：
+        {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "要读取的文件路径"
+                }
+            },
+            "required": ["file_path"]
+        }
+        """
+        return {}
+    
+    async def execute(self, **kwargs) -> str:
+        """
+        执行工具
+        
+        参数：kwargs - AI 传递的参数
+        返回：工具执行结果（字符串形式）
+        """
+        raise NotImplementedError</code></pre>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="file-name">agent/tools/filesystem.py - 文件读取工具示例</span>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                    </div>
+                    <pre><code class="language-python">class ReadFileTool(BaseTool):
+    """读取文件内容的工具"""
+    
+    @property
+    def name(self) -> str:
+        return "read_file"
+    
+    @property
+    def description(self) -> str:
+        return "读取指定文件的内容"
+    
+    @property
+    def parameters(self) -> dict:
+        return {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "要读取的文件路径"
+                }
+            },
+            "required": ["file_path"]
+        }
+    
+    async def execute(self, file_path: str) -> str:
+        """执行文件读取"""
+        try:
+            # 安全检查：确保路径在工作区内
+            if not self._is_safe_path(file_path):
+                return "错误：不能访问工作区外的文件"
+            
+            # 读取文件内容
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            return f"文件内容：\n{content}"
+        except Exception as e:
+            return f"读取失败：{str(e)}"</code></pre>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-comments"></i> 消息总线解析</h2>
+                <p>消息如何在系统中流转：</p>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="file-name">bus/queue.py - 消息总线</span>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> 复制
+                        </button>
+                    </div>
+                    <pre><code class="language-python">class MessageBus:
+    """
+    消息总线：连接各个组件的"邮局"
+    
+    工作原理：
+    1. 渠道（如 Telegram）收到用户消息 → 发布到入站队列
+    2. 代理引擎从入站队列取消息 → 处理 → 发布到出站队列
+    3. 渠道从出站队列取消息 → 发送给用户
+    """
+    
+    def __init__(self):
+        # 入站消息队列（用户 → AI）
+        self._inbound = asyncio.Queue()
+        # 出站消息队列（AI → 用户）
+        self._outbound = asyncio.Queue()
+    
+    async def publish_inbound(self, message: InboundMessage):
+        """发布入站消息（用户发给 AI）"""
+        await self._inbound.put(message)
+    
+    async def consume_inbound(self) -> InboundMessage:
+        """消费入站消息（AI 接收用户消息）"""
+        return await self._inbound.get()
+    
+    async def publish_outbound(self, message: OutboundMessage):
+        """发布出站消息（AI 发给用户）"""
+        await self._outbound.put(message)
+    
+    async def consume_outbound(self) -> OutboundMessage:
+        """消费出站消息（渠道发送给用户）"""
+        return await self._outbound.get()</code></pre>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('folder-structure')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('quick-start')">
+                    下一节：快速开始 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 第六部分：方法介绍 -->
+        <section id="methods" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-cubes"></i> 方法介绍</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>方法介绍</span>
+                </div>
+            </div>
+
+            <!-- 方法金字塔结构 -->
+            <div class="content-card">
+                <h2><i class="fas fa-layer-group"></i> 方法金字塔结构</h2>
+                <p>理解方法的层级关系，从顶层入口到底层基础，层层递进：</p>
+                
+                <div class="method-pyramid">
+                    <div class="pyramid-level level-1" onclick="showMethodsByLevel('level1')">
+                        <div class="pyramid-content">
+                            <i class="fas fa-play-circle"></i>
+                            <span class="level-name">系统入口层</span>
+                            <span class="level-desc">程序启动和初始化</span>
+                            <div class="level-methods">run(), start(), __init__()</div>
+                        </div>
+                    </div>
+                    <div class="pyramid-level level-2" onclick="showMethodsByLevel('level2')">
+                        <div class="pyramid-content">
+                            <i class="fas fa-cog"></i>
+                            <span class="level-name">核心处理层</span>
+                            <span class="level-desc">消息处理和AI推理</span>
+                            <div class="level-methods">_process_event(), _build_context(), generate(), execute()</div>
+                        </div>
+                    </div>
+                    <div class="pyramid-level level-3" onclick="showMethodsByLevel('level3')">
+                        <div class="pyramid-content">
+                            <i class="fas fa-boxes"></i>
+                            <span class="level-name">组件管理层</span>
+                            <span class="level-desc">组件注册和数据管理</span>
+                            <div class="level-methods">register(), get(), save(), load(), add_message()</div>
+                        </div>
+                    </div>
+                    <div class="pyramid-level level-4" onclick="showMethodsByLevel('level4')">
+                        <div class="pyramid-content">
+                            <i class="fas fa-tools"></i>
+                            <span class="level-name">基础操作层</span>
+                            <span class="level-desc">基础数据操作</span>
+                            <div class="level-methods">put(), get(), append(), extend(), parse()</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pyramid-legend">
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #FF6B6B;"></span>
+                        <span>点击层级查看详细方法</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 知识图谱 -->
+            <div class="content-card">
+                <h2><i class="fas fa-project-diagram"></i> 方法关系知识图谱</h2>
+                <p>可视化展示方法之间的调用关系，帮助理解系统工作流程：</p>
+                
+                <div class="knowledge-graph-container">
+                    <div id="methodGraph" class="knowledge-graph">
+                        <!-- 图谱将通过JS动态生成 -->
+                    </div>
+                    <div class="graph-legend">
+                        <div class="legend-title">关系类型</div>
+                        <div class="legend-item">
+                            <span class="legend-line calls"></span>
+                            <span>调用关系（A调用B）</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line uses"></span>
+                            <span>使用关系（A使用B）</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line related"></span>
+                            <span>相关关系（配合使用）</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 方法关系模式说明 -->
+            <div class="content-card">
+                <h2><i class="fas fa-sitemap"></i> 方法关系模式</h2>
+                <div class="relationship-patterns">
+                    <div class="pattern-card">
+                        <div class="pattern-icon" style="background: #4A90E2;">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="pattern-content">
+                            <h3>调用链（Call Chain）</h3>
+                            <p>A → B → C，像多米诺骨牌一样依次调用</p>
+                            <div class="pattern-example">run() → _process_event() → _build_context()</div>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <div class="pattern-icon" style="background: #F5A623;">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="pattern-content">
+                            <h3>循环调用（Loop）</h3>
+                            <p>A 调用 B，B 又调用 A，形成循环</p>
+                            <div class="pattern-example">_process_event() 递归调用自身</div>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <div class="pattern-icon" style="background: #7ED321;">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="pattern-content">
+                            <h3>配对使用（Pair）</h3>
+                            <p>两个方法配合使用，完成完整操作</p>
+                            <div class="pattern-example">register() ↔ get(), save() ↔ load()</div>
+                        </div>
+                    </div>
+                    <div class="pattern-card">
+                        <div class="pattern-icon" style="background: #BD10E0;">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="pattern-content">
+                            <h3>层级调用（Hierarchy）</h3>
+                            <p>上层调用下层，形成金字塔结构</p>
+                            <div class="pattern-example">顶层 → 核心 → 管理 → 基础</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 方法详细列表 -->
+            <div class="content-card">
+                <h2><i class="fas fa-list-ul"></i> 核心方法详解</h2>
+                <div class="method-filters">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="entry">系统入口</button>
+                    <button class="filter-btn" data-filter="core">核心处理</button>
+                    <button class="filter-btn" data-filter="manage">组件管理</button>
+                    <button class="filter-btn" data-filter="basic">基础操作</button>
+                </div>
+                <div id="methodsList" class="methods-list">
+                    <!-- 方法列表将通过JS动态生成 -->
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('code-analysis')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('demo')">
+                    下一节：运行演示 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 方法详情模态框 -->
+        <div id="methodModal" class="modal method-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="methodModalTitle"><i class="fas fa-cube"></i> 方法详情</h2>
+                    <button class="close-btn" onclick="closeMethodModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="methodModalBody">
+                    <!-- 方法详情内容 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 第七部分：运行演示 -->
+        <section id="demo" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-play-circle"></i> 运行演示</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>运行演示</span>
+                </div>
+            </div>
+
+            <!-- 演示内容将通过 JS 动态生成 -->
+            <div class="demo-section">
+                <!-- 场景选择器 -->
+                <div class="demo-scenario-selector">
+                    <label for="demo-scenario-select"><i class="fas fa-film"></i> 选择场景：</label>
+                    <select id="demo-scenario-select">
+                        <option value="scenario1">📨 消息处理流程</option>
+                    </select>
+                </div>
+
+                <!-- 场景信息 -->
+                <div id="demo-scenario-info" class="demo-scenario-info">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- 流程图容器 -->
+                <div id="demo-flow-container" class="demo-flow-container">
+                    <!-- SVG 流程图将通过 JS 绘制 -->
+                </div>
+
+                <!-- 提示文字 -->
+                <div class="demo-hint-text">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <span>点击流程图中的节点，查看详细的代码讲解和数据流</span>
+                </div>
+
+                <!-- 步骤详情 -->
+                <div id="demo-step-details" class="demo-step-details">
+                    <h2 id="demo-step-title" class="demo-step-title">
+                        <!-- 动态生成 -->
+                    </h2>
+                    <p id="demo-step-description" class="demo-step-description">
+                        <!-- 动态生成 -->
+                    </p>
+
+                    <!-- 代码展示 -->
+                    <div id="demo-code-container" class="demo-code-container">
+                        <!-- 动态生成 -->
+                    </div>
+
+                    <!-- 数据流展示 -->
+                    <div id="demo-dataflow-container" class="demo-dataflow-container">
+                        <!-- 动态生成 -->
+                    </div>
+
+                    <!-- 调用栈展示 -->
+                    <div id="demo-callstack-container" class="demo-callstack-container">
+                        <!-- 动态生成 -->
+                    </div>
+
+                    <!-- 教学提示 -->
+                    <div id="demo-tips-container" class="demo-tips-container">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('methods')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-primary" onclick="navigateTo('quick-start')">
+                    下一节：快速开始 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 第八部分：快速开始 -->
+        <section id="quick-start" class="section">
+            <div class="section-header">
+                <h1><i class="fas fa-rocket"></i> 快速开始</h1>
+                <div class="breadcrumb">
+                    <span>首页</span> / <span>快速开始</span>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-terminal"></i> 安装步骤</h2>
+                
+                <div class="install-steps">
+                    <div class="install-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>安装 Python</h3>
+                            <p>确保你的电脑已安装 Python 3.10 或更高版本</p>
+                            <div class="code-inline">
+                                <code>python --version</code>
+                                <button class="copy-btn-small" onclick="copyText('python --version')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="install-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>安装 Nanobot</h3>
+                            <p>使用 pip 安装</p>
+                            <div class="code-inline">
+                                <code>pip install nanobot</code>
+                                <button class="copy-btn-small" onclick="copyText('pip install nanobot')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="install-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>初始化配置</h3>
+                            <p>运行初始化命令</p>
+                            <div class="code-inline">
+                                <code>nanobot onboard</code>
+                                <button class="copy-btn-small" onclick="copyText('nanobot onboard')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="install-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>配置 API Key</h3>
+                            <p>编辑配置文件，添加你的 API Key</p>
+                            <div class="code-inline">
+                                <code>~/.nanobot/config.json</code>
+                            </div>
+                            <div class="config-example">
+                                <pre><code class="language-json">{
+  "providers": {
+    "openrouter": {
+      "api_key": "your-api-key-here"
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="install-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>开始对话</h3>
+                            <p>启动交互式对话</p>
+                            <div class="code-inline">
+                                <code>nanobot agent</code>
+                                <button class="copy-btn-small" onclick="copyText('nanobot agent')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-book"></i> 学习路径建议</h2>
+                
+                <div class="learning-path">
+                    <div class="path-item completed">
+                        <div class="path-icon">✅</div>
+                        <div class="path-content">
+                            <h4>第一步：理解概念</h4>
+                            <p>你已经完成了项目概述和核心功能的学习</p>
+                        </div>
+                    </div>
+                    <div class="path-item completed">
+                        <div class="path-icon">✅</div>
+                        <div class="path-content">
+                            <h4>第二步：了解架构</h4>
+                            <p>你已经了解了系统架构和数据流向</p>
+                        </div>
+                    </div>
+                    <div class="path-item active">
+                        <div class="path-icon">🎯</div>
+                        <div class="path-content">
+                            <h4>第三步：动手实践</h4>
+                            <p>尝试运行项目，体验基本功能</p>
+                        </div>
+                    </div>
+                    <div class="path-item">
+                        <div class="path-icon">📝</div>
+                        <div class="path-content">
+                            <h4>第四步：阅读代码</h4>
+                            <p>从 loop.py 开始，深入理解核心逻辑</p>
+                        </div>
+                    </div>
+                    <div class="path-item">
+                        <div class="path-icon">🔧</div>
+                        <div class="path-content">
+                            <h4>第五步：定制开发</h4>
+                            <p>尝试添加自己的工具或功能</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h2><i class="fas fa-question-circle"></i> 常见问题</h2>
+                
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Q: 我需要什么样的 AI 模型？</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>A: Nanobot 支持多种 AI 模型：</p>
+                            <ul>
+                                <li><strong>推荐</strong>：OpenRouter（支持多种模型，价格透明）</li>
+                                <li>Anthropic Claude（智能但价格较高）</li>
+                                <li>DeepSeek（性价比高，中文支持好）</li>
+                                <li>本地模型（如 Ollama，免费但需要硬件）</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Q: 如何添加新的聊天平台？</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>A: 需要实现 <code>BaseChannel</code> 类：</p>
+                            <ol>
+                                <li>在 <code>channels/</code> 目录创建新文件</li>
+                                <li>继承 <code>BaseChannel</code> 类</li>
+                                <li>实现 <code>start()</code> 和 <code>stop()</code> 方法</li>
+                                <li>在配置文件中添加相应配置</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Q: 如何创建自己的工具？</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>A: 创建工具很简单：</p>
+                            <ol>
+                                <li>在 <code>agent/tools/</code> 创建新文件</li>
+                                <li>继承 <code>BaseTool</code> 类</li>
+                                <li>定义 name、description、parameters</li>
+                                <li>实现 <code>execute()</code> 方法</li>
+                                <li>在 <code>__init__.py</code> 中注册工具</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button class="btn btn-secondary" onclick="navigateTo('code-analysis')">
+                    <i class="fas fa-arrow-left"></i> 上一节
+                </button>
+                <button class="btn btn-success" onclick="completeTutorial()">
+                    <i class="fas fa-check"></i> 完成教程
+                </button>
+            </div>
+        </section>
+
+        <!-- 完成提示 -->
+        <div id="completionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-icon">🎉</div>
+                <h2>恭喜你完成教程！</h2>
+                <p>你已经了解了 Nanobot 的核心概念和架构。</p>
+                <p>接下来，你可以：</p>
+                <ul>
+                    <li>动手运行项目，体验实际功能</li>
+                    <li>阅读源代码，深入理解实现细节</li>
+                    <li>尝试添加自己的工具和功能</li>
+                </ul>
+                <button class="btn btn-primary" onclick="closeModal()">继续探索</button>
+            </div>
+        </div>
+
+        <!-- 源码查看模态框 -->
+        <div id="sourceCodeModal" class="modal source-code-modal">
+            <div class="modal-content source-code-content">
+                <div class="source-code-header">
+                    <h2 id="sourceCodeTitle"><i class="fas fa-code"></i> 源码解析</h2>
+                    <button class="close-modal-btn" onclick="closeSourceCodeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="source-code-body">
+                    <div class="source-code-info">
+                        <div class="info-item">
+                            <i class="fas fa-file-code"></i>
+                            <span id="sourceCodeFile">文件路径</span>
+                        </div>
+                        <p id="sourceCodeDesc" class="source-code-desc">描述信息</p>
+                    </div>
+                    
+                    <div class="source-code-tabs">
+                        <div class="tabs-header" id="sourceCodeTabsHeader">
+                            <!-- 动态生成标签 -->
+                        </div>
+                        <div class="tabs-content" id="sourceCodeTabsContent">
+                            <!-- 动态生成内容 -->
+                        </div>
+                    </div>
+
+                    <div class="source-code-related" id="sourceCodeRelated">
+                        <h4><i class="fas fa-link"></i> 相关文件</h4>
+                        <div class="related-files" id="relatedFiles">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+
+                    <div class="source-code-tips" id="sourceCodeTips">
+                        <h4><i class="fas fa-lightbulb"></i> 学习提示</h4>
+                        <ul id="tipsList">
+                            <!-- 动态生成 -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="source-code-footer">
+                    <button class="btn btn-secondary" onclick="closeSourceCodeModal()">
+                        <i class="fas fa-times"></i> 关闭
+                    </button>
+                    <button class="btn btn-primary" onclick="navigateToCodeAnalysis()">
+                        <i class="fas fa-code"></i> 查看完整代码解析
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="js/code-data.js"></script>
+    <script src="js/methods-data.js"></script>
+    <script src="js/demo-data.js"></script>
+    <script src="js/demo-flow.js"></script>
+    <script src="js/demo-controller.js"></script>
+    <script src="js/tutorial.js"></script>
+    <script src="js/diagnose.js"></script>
+</body>
+</html>
