@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在跳转... | Nanobot 交互式教程</title>
+    <meta http-equiv="refresh" content="0; url=nanobot-tutorial/index.html">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .loading {
+            text-align: center;
+        }
+        .loading h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .loading p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .link {
+            margin-top: 20px;
+        }
+        .link a {
+            color: white;
+            text-decoration: underline;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <h1>🚀 正在加载 Nanobot 交互式教程...</h1>
+        <div class="spinner"></div>
+        <p>如果页面没有自动跳转，请点击下方链接</p>
+        <div class="link">
+            <a href="nanobot-tutorial/index.html">进入教程 →</a>
+        </div>
+    </div>
+    <script>
+        // 立即跳转
+        window.location.href = 'nanobot-tutorial/index.html';
+    </script>
+</body>
+</html>
