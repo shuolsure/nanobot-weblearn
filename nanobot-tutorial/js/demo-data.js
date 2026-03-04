@@ -171,18 +171,17 @@ const demoScenarios = {
         dataFlow: {
           input: {
             // 步骤 2 的 output
+            type: "MessageBus",
+            inbound_queue: "等待消息"
+          },
+          output: {
             type: "InboundMessage",
             content: "你好，请介绍一下你自己",
             channel: "cli",
-            chat_id: "user123"
+            chat_id: "user123",
+            status: "已从队列取出"
           },
-          output: {
-            type: "AsyncTask",
-            task_id: "task_123",
-            handler: "_dispatch",
-            status: "已创建"
-          },
-          transformation: "消息 → 异步处理任务"
+          transformation: "队列等待 → 消息取出 → 准备处理"
         },
         
         code: {
@@ -252,19 +251,20 @@ const demoScenarios = {
         dataFlow: {
           input: {
             // 步骤 3 的 output
-            type: "AsyncTask",
-            message: {
-              content: "你好，请介绍一下你自己",
-              channel: "cli",
-              chat_id: "user123"
-            }
+            type: "InboundMessage",
+            content: "你好，请介绍一下你自己",
+            channel: "cli",
+            chat_id: "user123",
+            status: "已从队列取出"
           },
           output: {
             type: "OutboundMessage 或 None",
-            content: "处理结果",
-            status: "处理中"
+            content: "AI 回复内容",
+            channel: "cli",
+            chat_id: "user123",
+            status: "处理完成"
           },
-          transformation: "加锁保护 → 调用处理器 → 发送响应"
+          transformation: "入站消息 → 加锁处理 → 出站消息"
         },
         
         code: {
@@ -274,23 +274,32 @@ const demoScenarios = {
           signature: "async def _dispatch(self, msg: InboundMessage) -> None",
           snippet: `async def _dispatch(self, msg: InboundMessage) -> None:
     """分发消息到处理器"""
-    # 使用全局锁确保顺序处理
+    # 使用全局锁确保消息处理的顺序性
     async with self._processing_lock:
         try:
             # 处理消息
             response = await self._process_message(msg)
             
-            # 发送响应
+            # 如果有响应，发送出去
             if response is not None:
                 await self.bus.publish_outbound(response)
+            elif msg.channel == "cli":
+                # CLI 模式下，即使没有响应也要发送空消息
+                await self.bus.publish_outbound(OutboundMessage(
+                    channel=msg.channel, chat_id=msg.chat_id,
+                    content="", metadata=msg.metadata or {},
+                ))
         except asyncio.CancelledError:
-            logger.info("Task cancelled")
+            # 任务被取消
+            logger.info("Task cancelled for session {}", msg.session_key)
             raise
         except Exception:
+            # 处理异常
             logger.exception("Error processing message")
-            await self.bus.publish_outbound(
-                OutboundMessage(content="Error occurred")
-            )`,
+            await self.bus.publish_outbound(OutboundMessage(
+                channel=msg.channel, chat_id=msg.chat_id,
+                content="Sorry, I encountered an error.",
+            ))`,
           
           explanation: `**分发器职责：**
 1. 🔒 加锁保护：确保消息顺序处理
@@ -327,7 +336,7 @@ const demoScenarios = {
         
         dataFlow: {
           input: {
-            // 步骤 4 的 input（传递下来的消息）
+            // 步骤 4 传递的消息
             type: "InboundMessage",
             content: "你好，请介绍一下你自己",
             channel: "cli",
@@ -336,7 +345,8 @@ const demoScenarios = {
           output: {
             type: "OutboundMessage",
             content: "你好！我是 Nanobot，一个智能助手...",
-            tool_calls: null
+            channel: "cli",
+            chat_id: "user123"
           },
           transformation: "消息 → 会话历史 → 上下文 → LLM 响应 → AI 回复"
         },
@@ -348,81 +358,150 @@ const demoScenarios = {
           signature: "async def _process_message(self, msg: InboundMessage, ...) -> OutboundMessage | None",
           snippet: `async def _process_message(self, msg, ...):
     """处理单条入站消息"""
-    # 判断消息类型
-    if msg.channel == "system":
-        # 处理系统消息
-        ...
-    elif msg.content.startswith('/'):
-        # 处理斜杠命令
-        if command == '/new':
-            await self.sessions.clear(msg.session_key)
-            return OutboundMessage(content="New conversation")
-    else:
-        # 正常消息处理
-        session = self.sessions.get_or_create(msg.session_key)
-        
-        # 添加用户消息到历史
-        session.add_message({
-            "role": "user",
-            "content": msg.content
-        })
-        
-        # 构建上下文
-        context = await self.context_builder.build_context(
-            session=session,
-            channel=msg.channel,
-            chat_id=msg.chat_id
-        )
-        
-        # 调用 LLM
-        response = await self.llm_provider.generate(
-            messages=context.messages,
-            tools=context.tools
-        )
-        
-        # 处理响应
-        if response.tool_calls:
-            # 执行工具调用
-            ...
-        else:
-            # 纯文本回复
-            ai_message = {
-                "role": "assistant",
-                "content": response.content
-            }
-            session.add_message(ai_message)
-            return OutboundMessage(content=response.content)`,
+    # 获取或创建会话
+    key = session_key or msg.session_key
+    session = self.sessions.get_or_create(key)
+    
+    # 处理斜杠命令
+    cmd = msg.content.strip().lower()
+    if cmd == "/new":
+        # 清除会话
+        session.clear()
+        return OutboundMessage(content="New session started.")
+    
+    # 设置工具上下文
+    self._set_tool_context(msg.channel, msg.chat_id, ...)
+    
+    # 获取历史消息
+    history = session.get_history(max_messages=self.memory_window)
+    
+    # 构建消息列表
+    initial_messages = self.context.build_messages(
+        history=history,
+        current_message=msg.content,
+        channel=msg.channel, chat_id=msg.chat_id,
+    )
+    
+    # 运行代理循环
+    final_content, _, all_msgs = await self._run_agent_loop(
+        initial_messages, on_progress=...
+    )
+    
+    # 保存会话
+    self._save_turn(session, all_msgs, 1 + len(history))
+    self.sessions.save(session)
+    
+    return OutboundMessage(
+        channel=msg.channel, chat_id=msg.chat_id, 
+        content=final_content
+    )`,
           
           explanation: `**核心处理流程：**
-1. 🔍 判断类型：系统消息/命令/普通消息
-2. 📝 添加历史：保存到会话
-3. 🧠 构建上下文：系统提示 + 历史 + 记忆 + 工具
-4. 🤖 调用 LLM：生成回复
-5. 🛠️ 处理响应：检查工具调用
-6. 💬 返回回复
+1. 📦 获取会话：get_or_create
+2. 🔍 检查命令：/new, /help 等
+3. 🛠️ 设置工具上下文
+4. 📜 获取历史：get_history
+5. 🧠 构建消息：build_messages
+6. 🤖 运行循环：_run_agent_loop
+7. 💾 保存会话：save
+8. 📤 返回响应
 
 **这是整个系统的"大脑"！**`,
           
           callStack: [
             { level: 1, method: "_dispatch()", file: "agent/loop.py" },
             { level: 2, method: "_process_message()", file: "agent/loop.py" },
-            { level: 3, method: "build_context()", file: "agent/context.py" },
-            { level: 4, method: "generate()", file: "providers/base.py" }
+            { level: 3, method: "build_messages()", file: "agent/context.py" },
+            { level: 4, method: "_run_agent_loop()", file: "agent/loop.py" }
           ]
         },
         
         tips: [
-          "💡 系统消息用于内部通信",
+          "💡 会话管理保证对话连续性",
           "💡 斜杠命令是系统保留命令",
-          "💡 build_context 组装所有必要信息",
-          "💡 tool_calls 是 LLM 请求调用工具"
+          "💡 build_messages 组装所有必要信息",
+          "💡 _run_agent_loop 是核心处理引擎"
+        ]
+      },
+      
+      {
+        id: 5.5,
+        node: "session-management",
+        title: "步骤 5.5: 会话管理",
+        description: "获取或创建用户会话，管理对话历史。",
+        icon: "fa-database",
+        color: "#9B59B6",
+        
+        dataFlow: {
+          input: {
+            // 步骤 5 传递的 session_key
+            session_key: "cli:user123"
+          },
+          output: {
+            type: "Session",
+            messages: [
+              {"role": "user", "content": "你好，请介绍一下你自己"}
+            ],
+            created_at: "2024-01-01 12:00:00"
+          },
+          transformation: "session_key → Session 对象"
+        },
+        
+        code: {
+          file: "nanobot/session/manager.py",
+          functionName: "get_or_create()",
+          line: 180,
+          signature: "def get_or_create(self, key: str) -> Session",
+          snippet: `def get_or_create(self, key: str) -> Session:
+    """获取或创建会话"""
+    # 检查缓存
+    if key in self._cache:
+        return self._cache[key]
+    
+    # 尝试从磁盘加载
+    session = self._load_session(key)
+    
+    # 如果不存在，创建新会话
+    if session is None:
+        session = Session(key=key)
+        logger.info(f"Created new session: {key}")
+    
+    # 更新缓存
+    self._cache[key] = session
+    return session`,
+          
+          explanation: `**会话管理的作用：**
+1. 💾 持久化：保存对话历史到磁盘
+2. 🔄 恢复：用户可以继续之前的对话
+3. 🎯 隔离：不同用户的对话互不干扰
+4. ⚡ 缓存：内存缓存提高性能
+
+**Session 对象包含：**
+- messages: 对话历史列表
+- created_at: 创建时间
+- updated_at: 更新时间
+- last_consolidated: 已整合的消息数`,
+          
+          callStack: [
+            { level: 1, method: "_process_message()", file: "agent/loop.py" },
+            { level: 2, method: "get_or_create()", file: "session/manager.py" },
+            { level: 3, method: "_load_session()", file: "session/manager.py" },
+            { level: 4, method: "Session()", file: "session/manager.py" }
+          ]
+        },
+        
+        tips: [
+          "💡 session_key 格式：channel:chat_id",
+          "💡 会话存储在 sessions/ 目录",
+          "💡 JSONL 格式便于阅读和调试",
+          "💡 内存缓存避免频繁磁盘 IO"
         ]
       },
       
       {
         id: 6,
         node: "build-context",
-        title: "步骤 6: 构建上下文",
+        title: "步骤 6: 构建消息列表",
         description: "组装所有必要信息，为 LLM 准备完整的知识包。",
         icon: "fa-box-open",
         color: "#3498DB",
@@ -430,91 +509,62 @@ const demoScenarios = {
         dataFlow: {
           input: {
             // 步骤 5 中调用的输入
-            session: "Session 对象",
+            history: [{"role": "user", "content": "你好，请介绍一下你自己"}],
+            current_message: "你好，请介绍一下你自己",
             channel: "cli",
-            chat_id: "user123",
-            history: [{"role": "user", "content": "你好，请介绍一下你自己"}]
+            chat_id: "user123"
           },
           output: {
-            type: "Context",
+            type: "Messages",
             messages: [
-              {"role": "system", "content": "你是有帮助的助手"},
+              {"role": "system", "content": "你是有帮助的助手..."},
               {"role": "user", "content": "你好，请介绍一下你自己"}
-            ],
-            tools: ["weather", "search", "calc"],
-            memory: null
+            ]
           },
-          transformation: "会话 + 记忆 + 工具 → 完整上下文"
+          transformation: "历史 + 当前消息 → 完整消息列表"
         },
         
         code: {
           file: "nanobot/agent/context.py",
-          functionName: "build_context()",
-          line: 45,
-          signature: "async def build_context(self, session: Session, channel: str, chat_id: str) -> Context",
-          snippet: `async def build_context(self, session, channel, chat_id):
-    """构建上下文 - 发送给 LLM 的完整知识包"""
-    # 1. 系统提示
-    system_prompt = self.config.system_prompt
-    
-    # 2. 对话历史
-    history = session.get_history(
-        max_messages=self.memory_window
-    )
-    messages = [
-        {"role": "system", "content": system_prompt}
-    ] + history
-    
-    # 3. 长期记忆（如果启用）
-    if self.memory_enabled:
-        memories = await self.memory_store.retrieve(
-            query=session.last_message,
-            limit=5
-        )
-        if memories:
-            system_prompt += "\\n相关记忆：" + memories
-    
-    # 4. 可用工具
-    tools = self.tool_registry.get_tools_for_channel(channel)
-    
-    # 5. 渠道信息
-    channel_info = {
-        "channel": channel,
-        "chat_id": chat_id,
-        "timestamp": datetime.now().isoformat()
-    }
-    
-    return Context(
-        messages=messages,
-        system_prompt=system_prompt,
-        tools=tools,
-        channel_info=channel_info
-    )`,
+          functionName: "build_messages()",
+          line: 248,
+          signature: "def build_messages(self, history: list, current_message: str, ...) -> list[dict]",
+          snippet: `def build_messages(self, history, current_message, ...):
+    """构建完整的消息列表"""
+    return [
+        # 系统消息：定义代理的身份和能力
+        {"role": "system", "content": self.build_system_prompt(skill_names)},
+        # 历史消息：之前的对话
+        *history,
+        # 运行时上下文：当前时间和渠道信息
+        {"role": "user", "content": self._build_runtime_context(channel, chat_id)},
+        # 用户消息：当前的用户输入
+        {"role": "user", "content": self._build_user_content(current_message, media)},
+    ]`,
           
-          explanation: `**上下文五大要素：**
-1. 📜 系统提示：定义 AI 角色和行为
-2. 💬 对话历史：最近的对话记录
-3. 🧠 长期记忆：用户偏好、历史事实
-4. 🛠️ 可用工具：天气查询、文件读写等
-5. 📊 渠道信息：来源渠道、时间戳
+          explanation: `**消息列表四大要素：**
+1. 📜 系统消息：定义 AI 角色和行为
+2. 💬 历史消息：之前的对话记录
+3. ⏰ 运行时上下文：当前时间、渠道信息
+4. 📝 用户消息：当前的用户输入
 
-**为什么需要上下文？**
-- LLM 是无状态的，每次调用都是独立的
-- 上下文让 LLM"记住"之前的对话`,
+**为什么需要消息列表？**
+- LLM 是无状态的，每次调用都需要完整上下文
+- 消息列表让 LLM"记住"之前的对话`,
           
           callStack: [
             { level: 1, method: "_process_message()", file: "agent/loop.py" },
-            { level: 2, method: "build_context()", file: "agent/context.py" },
-            { level: 3, method: "get_history()", file: "session/manager.py" },
-            { level: 4, method: "retrieve()", file: "agent/memory.py" }
+            { level: 2, method: "build_messages()", file: "agent/context.py" },
+            { level: 3, method: "build_system_prompt()", file: "agent/context.py" },
+            { level: 4, method: "_build_user_content()", file: "agent/context.py" }
           ]
         },
         
         tips: [
-          "💡 系统提示是对话的基调",
-          "💡 memory_window 控制历史消息数量",
-          "💡 记忆检索使用语义相似度",
-          "💡 上下文越大，LLM 处理越慢"
+          "💡 系统消息是对话的基调",
+          "💡 *history 展开历史消息",
+          "💡 运行时上下文包含时间戳",
+          "💡 消息列表越大，LLM 处理越慢"
         ]
       },
       
@@ -705,11 +755,12 @@ const demoScenarios = {
       
       // 第二行：处理流程（分支）
       { id: "process-message", label: "消息处理", icon: "fa-magic", x: 850, y: 80 },
-      { id: "build-context", label: "构建上下文", icon: "fa-box-open", x: 850, y: 200 },
-      { id: "llm-generate", label: "LLM 生成", icon: "fa-brain", x: 850, y: 320 },
+      { id: "session-management", label: "会话管理", icon: "fa-database", x: 850, y: 200 },
+      { id: "build-context", label: "构建消息", icon: "fa-box-open", x: 850, y: 320 },
+      { id: "llm-generate", label: "LLM 生成", icon: "fa-brain", x: 850, y: 440 },
       
       // 第三行：返回流程
-      { id: "send-response", label: "发送响应", icon: "fa-paper-plane", x: 650, y: 320 }
+      { id: "send-response", label: "发送响应", icon: "fa-paper-plane", x: 650, y: 440 }
     ],
     
     // 流程图连线（支持分支）
@@ -721,7 +772,8 @@ const demoScenarios = {
       { from: "dispatch", to: "process-message" },
       
       // 分支流程：向下
-      { from: "process-message", to: "build-context" },
+      { from: "process-message", to: "session-management" },
+      { from: "session-management", to: "build-context" },
       { from: "build-context", to: "llm-generate" },
       
       // 返回流程：向左

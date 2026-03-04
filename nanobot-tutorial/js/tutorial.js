@@ -7,7 +7,7 @@
 const state = {
     currentSection: 'overview',
     completedSections: new Set(),
-    totalSections: 6
+    totalSections: 8
 };
 
 // DOM 元素
@@ -400,6 +400,96 @@ window.closeModal = closeModal;
 // 当前活动的源码标签索引
 let currentSourceTabIndex = 0;
 
+// 格式化苏格拉底式提问
+function formatSocraticQuestions(text) {
+    // 检查是否包含苏格拉底式提问
+    if (!text.includes('**苏格拉底式提问**')) {
+        return `<p>${text}</p>`;
+    }
+    
+    // 分割文本
+    const parts = text.split('\n\n');
+    let html = '<div class="socratic-container">';
+    
+    parts.forEach(part => {
+        if (part.includes('**苏格拉底式提问**')) {
+            // 提取标题
+            html += '<div class="socratic-header">';
+            html += '<i class="fas fa-question-circle"></i>';
+            html += '<h4>苏格拉底式提问</h4>';
+            html += '</div>';
+            html += '<div class="socratic-questions">';
+            
+            // 提取问题
+            const lines = part.split('\n');
+            let questionNum = 0;
+            let currentQuestion = null;
+            
+            lines.forEach(line => {
+                // 匹配问题编号
+                const questionMatch = line.match(/^(\d+)\.\s*(.+)/);
+                if (questionMatch) {
+                    questionNum = questionMatch[1];
+                    const questionText = questionMatch[2];
+                    
+                    // 检查是否有emoji
+                    const emojiMatch = questionText.match(/^([\u{1F300}-\u{1F9FF}])\s*\*\*(.+?)\*\*\s*$/u);
+                    if (emojiMatch) {
+                        // 带emoji的问题标题
+                        if (currentQuestion) {
+                            html += currentQuestion;
+                        }
+                        currentQuestion = `
+                            <div class="socratic-question">
+                                <div class="question-title">
+                                    <span class="question-number">${questionNum}</span>
+                                    <span class="question-emoji">${emojiMatch[1]}</span>
+                                    <span class="question-text">${emojiMatch[2]}</span>
+                                </div>
+                        `;
+                    } else {
+                        // 普通问题
+                        if (currentQuestion) {
+                            html += currentQuestion;
+                        }
+                        currentQuestion = `
+                            <div class="socratic-question">
+                                <div class="question-title">
+                                    <span class="question-number">${questionNum}</span>
+                                    <span class="question-text">${questionText}</span>
+                                </div>
+                        `;
+                    }
+                } else if (line.trim().startsWith('→')) {
+                    // 答案
+                    const answerText = line.trim().substring(1).trim();
+                    if (currentQuestion) {
+                        currentQuestion += `
+                            <div class="question-answer">
+                                <i class="fas fa-arrow-right"></i>
+                                <span>${answerText}</span>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            // 添加最后一个问题
+            if (currentQuestion) {
+                html += currentQuestion;
+            }
+            
+            html += '</div></div>';
+        } else if (part.trim()) {
+            // 普通文本
+            html += `<p class="socratic-note">${part}</p>`;
+        }
+    });
+    
+    html += '</div>';
+    return html;
+}
+
 // 显示源码模态框
 function showSourceCode(codeId) {
     const data = codeData[codeId];
@@ -434,7 +524,7 @@ function showSourceCode(codeId) {
         tabContent.innerHTML = `
             <div class="code-section">
                 <div class="code-explanation">
-                    <p>${section.explanation}</p>
+                    ${formatSocraticQuestions(section.explanation)}
                 </div>
                 <div class="code-block">
                     <div class="code-header">

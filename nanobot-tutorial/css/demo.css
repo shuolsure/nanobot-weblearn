@@ -192,7 +192,7 @@
 }
 
 .demo-step-title {
-  color: #2c3e50;
+  color: #1a1a1a !important;
   font-size: 1.6em;
   margin-bottom: 12px;
   display: flex;

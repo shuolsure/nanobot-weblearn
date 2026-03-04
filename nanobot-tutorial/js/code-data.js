@@ -3325,6 +3325,217 @@ if __name__ == "__main__":
             '💡 可以添加启动前的检查',
             '💡 处理启动异常'
         ]
+    },
+
+    // ==================== 新增：关键文件解释 ====================
+    
+    // context.py - 上下文构建器
+    'context-builder': {
+        title: 'context.py - 上下文构建器',
+        file: 'nanobot/agent/context.py',
+        description: '负责构建发送给 LLM 的完整上下文，包括系统提示、历史消息、运行时信息等。',
+        sections: [
+            {
+                name: '🧩 思考：什么是上下文？',
+                code: `"""
+上下文构建模块：组装代理提示
+
+这个模块负责构建发送给 LLM 的完整上下文，包括：
+1. 系统提示（身份、运行时信息、工作区信息）
+2. 引导文件（AGENTS.md, SOUL.md, USER.md, TOOLS.md 等）
+3. 记忆上下文（长期记忆）
+4. 技能上下文（可用技能列表）
+5. 对话历史
+6. 当前用户消息
+
+设计思路：
+- 分层构建上下文，便于维护和扩展
+- 支持多模态内容（图片）
+- 自动注入运行时信息（时间、渠道等）
+- 使用引导文件实现可定制的代理行为
+"""`,
+                explanation: '**苏格拉底式提问**：\n\n1. 为什么 LLM 需要上下文？\n   → LLM 是无状态的，每次调用都是独立的\n   → 上下文让 LLM "记住"之前的对话\n\n2) 上下文包含哪些内容？\n   → 系统提示（身份）、历史消息、当前消息\n   → 引导文件（定制行为）、记忆（长期信息）'
+            },
+            {
+                name: '🏗️ 构建系统提示',
+                code: `def build_system_prompt(self, skill_names: list[str] | None = None) -> str:
+    """
+    构建系统提示
+    
+    系统提示是发送给 LLM 的第一条消息，定义了代理的身份、能力和行为准则。
+    """
+    # 从身份信息开始构建
+    parts = [self._get_identity()]
+    
+    # 加载引导文件
+    bootstrap = self._load_bootstrap_files()
+    if bootstrap:
+        parts.append(bootstrap)
+    
+    # 添加记忆上下文
+    if self.memory_enabled:
+        memories = self.memory.get_recent()
+        if memories:
+            parts.append(f"\\n相关记忆：\\n{memories}")
+    
+    # 添加技能上下文
+    if skill_names:
+        skills_context = self.skills.get_context(skill_names)
+        if skills_context:
+            parts.append(f"\\n可用技能：\\n{skills_context}")
+    
+    return "\\n\\n".join(parts)`,
+                explanation: '**系统提示的组成**：\n\n1. 📋 身份信息：名称、版本、运行时环境\n2. 📚 引导文件：用户自定义的配置\n3. 🧠 记忆：长期记忆中的信息\n4. 🛠️ 技能：可用的技能列表\n\n**为什么分层构建？**\n→ 便于维护、易于扩展、灵活配置'
+            },
+            {
+                name: '📝 构建消息列表',
+                code: `def build_messages(
+    self,
+    history: list[dict[str, Any]],           # 对话历史
+    current_message: str,                     # 当前用户消息
+    skill_names: list[str] | None = None,    # 可选的技能名称列表
+    media: list[str] | None = None,          # 可选的媒体文件路径列表
+    channel: str | None = None,              # 可选的渠道名称
+    chat_id: str | None = None,              # 可选的聊天 ID
+) -> list[dict[str, Any]]:
+    """构建完整的消息列表"""
+    return [
+        # 系统消息：定义代理的身份和能力
+        {"role": "system", "content": self.build_system_prompt(skill_names)},
+        # 历史消息：之前的对话
+        *history,
+        # 运行时上下文：当前时间和渠道信息
+        {"role": "user", "content": self._build_runtime_context(channel, chat_id)},
+        # 用户消息：当前的用户输入（可能包含图片）
+        {"role": "user", "content": self._build_user_content(current_message, media)},
+    ]`,
+                explanation: '**消息列表结构**：\n\n1. 📜 系统消息：定义 AI 角色和行为\n2. 💬 历史消息：之前的对话记录\n3. ⏰ 运行时上下文：当前时间、渠道信息\n4. 📝 用户消息：当前的用户输入\n\n**苏格拉底式提问**：\n\n1. 为什么需要运行时上下文？\n   → 让 AI 知道"现在几点"、"从哪个渠道来的"\n   → 有助于 AI 提供更相关的回复\n\n2) *history 是什么意思？\n   → 展开运算符，将列表元素逐个添加\n   → 等价于 history[0], history[1], ...'
+            }
+        ],
+        relatedFiles: ['agent/loop.py', 'agent/memory.py'],
+        tips: [
+            '💡 系统提示是对话的基调',
+            '💡 引导文件可以定制 AI 行为',
+            '💡 运行时上下文包含时间戳',
+            '💡 消息列表越大，LLM 处理越慢'
+        ]
+    },
+
+    // memory.py - 记忆存储
+    'memory-store': {
+        title: 'memory.py - 记忆存储系统',
+        file: 'nanobot/agent/memory.py',
+        description: '管理长期记忆和历史记录，让 AI 能够"记住"重要信息。',
+        sections: [
+            {
+                name: '🧠 思考：AI 如何"记忆"？',
+                code: `"""
+记忆存储模块：管理长期记忆
+
+记忆系统的作用：
+1. 持久化：保存重要信息到磁盘
+2. 检索：根据相关性找回记忆
+3. 整合：定期总结和压缩记忆
+
+设计思路：
+- 使用向量数据库进行语义检索
+- 支持多种记忆类型（对话、事实、摘要）
+- 自动整合避免记忆爆炸
+"""`,
+                explanation: '**为什么需要记忆系统？**\n\n1. 📏 上下文窗口有限：LLM 无法记住所有对话\n2. 🎯 信息提取：从大量对话中提取关键信息\n3. 🔄 跨会话记忆：用户下次来还能"记得"\n\n**苏格拉底式提问**：\n\n1. 为什么不直接保存所有对话？\n   → 上下文窗口有限（如 4096 tokens）\n   → 太多历史会让 AI "忘记"重要信息\n\n2) 如何判断哪些信息重要？\n   → 使用 AI 提取关键信息\n   → 用户偏好、重要事实、决策理由等'
+            },
+            {
+                name: '💾 记忆存储',
+                code: `class MemoryStore:
+    """记忆存储：管理长期记忆"""
+    
+    def __init__(self, workspace: Path):
+        self.workspace = workspace
+        self.memory_file = workspace / "MEMORY.md"
+        self.history_file = workspace / "HISTORY.md"
+    
+    async def store(self, memory: dict) -> None:
+        """
+        存储记忆
+        
+        将重要信息保存到 MEMORY.md 文件
+        """
+        # 格式化记忆
+        entry = f"## {memory['timestamp']}\\n{memory['content']}\\n"
+        
+        # 追加到文件
+        with open(self.memory_file, "a") as f:
+            f.write(entry)
+    
+    async def retrieve(self, query: str, limit: int = 5) -> list[dict]:
+        """
+        检索相关记忆
+        
+        使用语义相似度搜索相关记忆
+        """
+        # 读取所有记忆
+        memories = self._load_memories()
+        
+        # 计算相似度
+        scored = []
+        for memory in memories:
+            score = self._similarity(query, memory['content'])
+            scored.append((score, memory))
+        
+        # 返回最相关的记忆
+        scored.sort(reverse=True)
+        return [m for _, m in scored[:limit]]`,
+                explanation: '**记忆存储流程**：\n\n1. 📥 存储：将重要信息保存到 MEMORY.md\n2. 🔍 检索：根据查询找到相关记忆\n3. 📊 排序：按相似度排序返回最相关的\n\n**苏格拉底式提问**：\n\n1. 为什么用 Markdown 文件存储？\n   → 人类可读，便于调试\n   → 版本控制友好\n\n2) 如何计算相似度？\n   → 使用向量嵌入（embedding）\n   → 将文本转换为向量，计算余弦相似度'
+            },
+            {
+                name: '🔄 记忆整合',
+                code: `async def consolidate(self, session: Session) -> None:
+    """
+    整合记忆：从对话中提取重要信息
+    
+    当对话历史过长时，调用 AI 提取关键信息
+    """
+    # 获取未整合的消息
+    messages = session.messages[session.last_consolidated:]
+    
+    if not messages:
+        return
+    
+    # 构建 AI 提示
+    prompt = f"""
+    请从以下对话中提取重要信息：
+    
+    {self._format_messages(messages)}
+    
+    提取要点：
+    - 用户偏好
+    - 重要事实
+    - 决策理由
+    - 待办事项
+    """
+    
+    # 调用 AI 提取
+    summary = await self.llm.generate(prompt)
+    
+    # 保存摘要
+    await self.store({
+        "timestamp": datetime.now().isoformat(),
+        "content": summary,
+        "type": "consolidation"
+    })
+    
+    # 更新整合标记
+    session.last_consolidated = len(session.messages)`,
+                explanation: '**记忆整合的作用**：\n\n1. 📉 压缩：将长对话压缩成简短摘要\n2. 🎯 提取：只保留重要信息\n3. 🧹 清理：释放上下文空间\n\n**什么时候触发整合？**\n→ 当未整合消息数超过阈值（如 memory_window）\n→ 用户执行 /new 命令时\n\n**苏格拉底式提问**：\n\n1. 为什么不让 AI 记住所有对话？\n   → 成本高（token 消耗）\n   → 效率低（处理时间长）\n   → 效果差（信息过载）\n\n2) 整合会丢失信息吗？\n   → 会丢失细节，但保留要点\n   → 这是"遗忘"的必要代价'
+            }
+        ],
+        relatedFiles: ['agent/loop.py', 'session/manager.py'],
+        tips: [
+            '💡 记忆让 AI 更"聪明"',
+            '💡 整合是必要的"遗忘"',
+            '💡 MEMORY.md 可以手动编辑',
+            '💡 相似度搜索使用向量嵌入'
+        ]
     }
 };
 

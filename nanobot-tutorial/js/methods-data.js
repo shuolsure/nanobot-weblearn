@@ -70,7 +70,113 @@ const methodsData = {
             { from: "run", to: "get_queue", type: "uses" },
             { from: "add_message", to: "append", type: "uses" },
             { from: "save", to: "load", type: "related" },
-            { from: "register", to: "get", type: "related" }
+            { from: "register", to: "get", type: "related" },
+            
+            // 数据流关系（新增）
+            { from: "put", to: "get_queue", type: "data_flow", label: "InboundMessage", style: "dashed" },
+            { from: "_process_event", to: "generate", type: "data_flow", label: "Context", style: "dashed" },
+            { from: "generate", to: "execute", type: "data_flow", label: "ToolCalls", style: "dashed" },
+            { from: "execute", to: "_process_event", type: "data_flow", label: "ToolResult", style: "dashed" },
+            { from: "add_message", to: "_build_context", type: "data_flow", label: "History", style: "dashed" },
+            
+            // 时序关系（新增）
+            { from: "__init__", to: "start", type: "sequence", label: "先初始化，后启动" },
+            { from: "start", to: "run", type: "sequence", label: "先启动，后运行" },
+            { from: "get", to: "add_message", type: "sequence", label: "先获取会话，再添加消息" },
+            { from: "save", to: "load", type: "sequence", label: "先保存，后加载" }
+        ]
+    },
+
+    // ==================== 时序图：消息处理流程（新增） ====================
+    sequenceDiagram: {
+        title: "消息处理时序图",
+        description: "展示消息从用户输入到AI回复的完整流程",
+        participants: [
+            { id: "user", name: "用户", icon: "👤" },
+            { id: "bus", name: "MessageBus", icon: "🚌" },
+            { id: "loop", name: "AgentLoop", icon: "🔄" },
+            { id: "session", name: "Session", icon: "💾" },
+            { id: "context", name: "ContextBuilder", icon: "🧩" },
+            { id: "llm", name: "LLM Provider", icon: "🤖" }
+        ],
+        steps: [
+            { 
+                from: "user", 
+                to: "bus", 
+                action: "发送消息", 
+                data: "InboundMessage",
+                description: "用户输入被包装成 InboundMessage"
+            },
+            { 
+                from: "bus", 
+                to: "loop", 
+                action: "消费消息", 
+                data: "InboundMessage",
+                description: "AgentLoop 从队列中取出消息"
+            },
+            { 
+                from: "loop", 
+                to: "session", 
+                action: "获取会话", 
+                data: "session_key",
+                description: "根据 session_key 获取或创建会话"
+            },
+            { 
+                from: "session", 
+                to: "loop", 
+                action: "返回会话", 
+                data: "Session",
+                description: "返回包含历史消息的 Session 对象"
+            },
+            { 
+                from: "loop", 
+                to: "context", 
+                action: "构建消息", 
+                data: "history + current_message",
+                description: "组装系统提示、历史、当前消息"
+            },
+            { 
+                from: "context", 
+                to: "loop", 
+                action: "返回消息列表", 
+                data: "messages[]",
+                description: "返回完整的消息列表"
+            },
+            { 
+                from: "loop", 
+                to: "llm", 
+                action: "生成回复", 
+                data: "messages[]",
+                description: "调用 LLM API 生成回复"
+            },
+            { 
+                from: "llm", 
+                to: "loop", 
+                action: "返回回复", 
+                data: "LLMResponse",
+                description: "返回 AI 生成的回复内容"
+            },
+            { 
+                from: "loop", 
+                to: "session", 
+                action: "保存会话", 
+                data: "AI message",
+                description: "将 AI 回复保存到会话历史"
+            },
+            { 
+                from: "loop", 
+                to: "bus", 
+                action: "发布响应", 
+                data: "OutboundMessage",
+                description: "将回复发送到出站队列"
+            },
+            { 
+                from: "bus", 
+                to: "user", 
+                action: "显示回复", 
+                data: "OutboundMessage",
+                description: "用户看到 AI 的回复"
+            }
         ]
     },
 
@@ -91,6 +197,29 @@ const methodsData = {
                     "run() 就是这个'接线员'，它 24/7 不间断地监听消息队列",
                     "如果没有循环，处理完一条消息程序就结束了，无法持续服务",
                     "while True 配合 await，让程序'等待但不阻塞'，高效利用资源"
+                ],
+                // 新增：苏格拉底式追问
+                followUp: [
+                    {
+                        q: "如果不用循环，处理完一条消息后会发生什么？",
+                        hint: "想象一个客服中心，电话打进来...",
+                        answer: "程序会退出，无法处理后续消息。就像客服接完一个电话就下班了，其他用户打不通。"
+                    },
+                    {
+                        q: "为什么用 while True 而不是定时任务？",
+                        hint: "考虑实时性和资源消耗",
+                        answer: "while True + await 可以立即响应新消息，定时任务有延迟且浪费资源（即使没消息也要定期检查）。"
+                    },
+                    {
+                        q: "无限循环会不会占用 100% CPU？",
+                        hint: "看看 await 的作用",
+                        answer: "不会！await 会释放 CPU 控制权，让其他任务运行。当队列空时，程序'休眠'等待，不消耗 CPU。"
+                    },
+                    {
+                        q: "如果消息处理很慢，新消息会丢失吗？",
+                        hint: "思考队列的作用",
+                        answer: "不会！消息队列会缓存消息。就像餐厅排队点餐，即使厨师忙，顾客的订单也会被记录下来。"
+                    }
                 ]
             },
             usage: {
@@ -144,6 +273,29 @@ const methodsData = {
                     "__init__ 就是对象的'初始化流程'，设置初始状态",
                     "不同对象需要不同的初始配置（如AI需要配置API密钥）",
                     "没有 __init__，每次创建对象后都要手动设置属性，容易出错"
+                ],
+                // 新增：苏格拉底式追问
+                followUp: [
+                    {
+                        q: "如果不写 __init__，对象会怎样？",
+                        hint: "思考对象的初始状态",
+                        answer: "对象会被创建，但所有属性都是未定义的。就像买了辆新车但没有钥匙、没有油、没有车牌。"
+                    },
+                    {
+                        q: "__init__ 和普通方法有什么区别？",
+                        hint: "看看调用时机",
+                        answer: "__init__ 在创建对象时自动调用，且只调用一次。普通方法需要手动调用，可以调用多次。"
+                    },
+                    {
+                        q: "__init__ 可以返回值吗？",
+                        hint: "试试看会怎样",
+                        answer: "不可以！__init__ 必须返回 None。如果尝试返回其他值，Python 会报错。"
+                    },
+                    {
+                        q: "为什么要用 self.xxx = xxx？",
+                        hint: "思考 self 的作用",
+                        answer: "self 指向对象本身。self.xxx 让属性'属于'这个对象，其他方法才能访问。否则变量只在 __init__ 内有效。"
+                    }
                 ]
             },
             usage: {
@@ -191,6 +343,29 @@ const methodsData = {
                     "_process_event 把这些步骤封装在一起，形成完整的'诊疗流程'",
                     "处理消息很复杂：构建上下文、调用AI、执行工具、递归处理",
                     "单独封装让代码更清晰，也便于测试和复用"
+                ],
+                // 新增：苏格拉底式追问
+                followUp: [
+                    {
+                        q: "为什么这个方法要用 async？",
+                        hint: "思考哪些操作需要等待",
+                        answer: "因为处理消息涉及 I/O 操作：调用 LLM API、执行工具、访问数据库。这些操作需要等待，用 async 可以在等待时处理其他任务。"
+                    },
+                    {
+                        q: "为什么用 yield 而不是 return？",
+                        hint: "思考流式输出的场景",
+                        answer: "yield 可以逐步返回结果，实现流式输出。用户可以看到 AI '边思考边输出'，而不是等很久才看到完整回复。"
+                    },
+                    {
+                        q: "如果 AI 一直调用工具，会不会死循环？",
+                        hint: "看看递归的终止条件",
+                        answer: "理论上可能！所以通常会设置最大递归深度（如 10 次）。超过限制就强制停止，返回错误信息。"
+                    },
+                    {
+                        q: "工具执行失败会怎样？",
+                        hint: "思考异常处理",
+                        answer: "工具执行失败时，错误信息会作为工具结果返回给 AI。AI 可以看到错误，决定是重试、换工具，还是告诉用户无法完成。"
+                    }
                 ]
             },
             usage: {

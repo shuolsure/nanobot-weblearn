@@ -1,0 +1,122 @@
+/* ==================== 苏格拉底式提问样式 ==================== */
+
+.socratic-container {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    border: 1px solid #e1e4e8;
+}
+
+.socratic-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #d1d9e6;
+}
+
+.socratic-header i {
+    font-size: 24px;
+    color: #667eea;
+}
+
+.socratic-header h4{
+    margin: 0;
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.socratic-questions{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.socratic-question{
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #667eea;
+}
+
+.question-title{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.question-number{
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.question-emoji{
+    font-size: 20px;
+}
+
+.question-text{
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 15px;
+}
+
+.question-answer{
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+    padding-left: 38px;
+    color: #5a6c7d;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.question-answer i{
+    color: #667eea;
+    font-size: 12px;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.question-answer span{
+    flex: 1;
+}
+
+.socratic-note{
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    color: #5a6c7d;
+    border-left: 4px solid #95a5a6;
+    line-height: 1.6;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .socratic-container{
+        padding: 15px;
+    }
+    
+    .socratic-question{
+        padding: 12px;
+    }
+    
+    .question-answer{
+        padding-left: 20px;
+    }
+}
